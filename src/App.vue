@@ -1,47 +1,72 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+    import Header from './components/Header/Header.vue';
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <div class="app">
+        <Header :content="'ALP Pet Care'"/>
+        <div class="content-box">
+            <router-view></router-view>
+        </div>
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
 </template>
 
+<style>
+/* 전역 스타일을 추가해보세요 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* router-link 기본 스타일 완전 제거 */
+:deep(a.router-link-active),
+:deep(a.router-link-exact-active),
+:deep(.router-link-active),
+:deep(.router-link-exact-active),
+a.router-link-active,
+a.router-link-exact-active,
+.router-link-active,
+.router-link-exact-active {
+    background-color: transparent !important;
+    color: inherit !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* 모든 router-link 호버 효과 제거 */
+:deep(a.router-link-active:hover),
+:deep(a.router-link-exact-active:hover),
+:deep(.router-link-active:hover),
+:deep(.router-link-exact-active:hover),
+a.router-link-active:hover,
+a.router-link-exact-active:hover,
+.router-link-active:hover,
+.router-link-exact-active:hover {
+    background-color: transparent !important;
+}
+</style>
+
 <style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
+    .app {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    .content-box {
+        margin-top: 4rem;
+        width: 200%;
+        flex: 1;
+        background-color: #f5f5f5;
+    }
 </style>
