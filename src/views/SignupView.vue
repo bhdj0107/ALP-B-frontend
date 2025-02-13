@@ -1,30 +1,57 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+
+const router = useRouter();
 
 const formData = ref({
-    username: '',
+    name: '',
     email: '',
     password: '',
+    phone: '',
     confirmPassword: ''
 });
 
-const handleSubmit = () => {
-    // TODO: Implement signup logic
-    console.log('Form submitted:', formData.value);
+const handleSignup = async () => {
+    try {
+        // 비밀번호 확인 검증
+        if (formData.value.password !== formData.value.confirmPassword) {
+            alert('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        // API 요청 데이터에서 confirmPassword 제외
+        const { confirmPassword, ...signupData } = formData.value;
+        
+        const response = await axios.post('http://172.30.1.36:8080/api/v1/user/signup', signupData);
+        if (response.status === 200) {
+            alert('회원가입이 완료되었습니다.');
+            router.push('/login');
+        }
+    } catch (error: any) {
+        if (error.response?.status === 401) {
+            alert('회원가입 권한이 없습니다.');
+        } else if (error.response?.status === 500) {
+            alert('서버 오류가 발생했습니다.');
+        } else {
+            alert('회원가입 중 오류가 발생했습니다.');
+        }
+    }
 };
 </script>
 
 <template>
     <div class="signup">
         <div class="signup-container">
-            <h1>회원가입</h1>
-            <form @submit.prevent="handleSubmit">
+            <h2>회원가입</h2>
+            <form @submit.prevent="handleSignup" class="signup-form">
                 <div class="form-group">
-                    <label for="username">이름</label>
+                    <label for="name">이름</label>
                     <input 
                         type="text" 
-                        id="username"
-                        v-model="formData.username"
+                        id="name"
+                        v-model="formData.name"
                         required
                     >
                 </div>
@@ -55,6 +82,15 @@ const handleSubmit = () => {
                         required
                     >
                 </div>
+                <div class="form-group">
+                    <label for="phone">전화번호</label>
+                    <input 
+                        type="tel" 
+                        id="phone"
+                        v-model="formData.phone"
+                        required
+                    >
+                </div>
                 <button type="submit">가입하기</button>
             </form>
         </div>
@@ -79,49 +115,44 @@ const handleSubmit = () => {
     max-width: 400px;
 }
 
-h1 {
+h2 {
     text-align: center;
     color: #333;
     margin-bottom: 2rem;
 }
 
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
 .form-group {
-    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #666;
+    font-weight: bold;
 }
 
 input {
-    width: 100%;
-    padding: 0.75rem;
+    padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-}
-
-input:focus {
-    outline: none;
-    border-color: #4a4f54;
 }
 
 button {
-    width: 100%;
-    padding: 0.75rem;
-    background: linear-gradient(to right, #2c3338, #4a4f54);
+    padding: 10px;
+    background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 4px;
-    font-size: 1rem;
     cursor: pointer;
-    transition: opacity 0.3s ease;
 }
 
 button:hover {
-    opacity: 0.9;
+    background-color: #45a049;
 }
 </style> 
