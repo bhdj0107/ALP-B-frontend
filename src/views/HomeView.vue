@@ -47,8 +47,9 @@
     height: 500px;
     background-image: url('@/assets/banner.jpg');
     background-size: cover;
-    background-position: center;
+    background-position: center 30%;
     position: relative;
+    overflow: hidden;
 }
 
 .banner-gradient {
