@@ -120,22 +120,52 @@
             <h2>코드 상세 정보</h2>
             <form @submit.prevent="saveCodeDetail">
                 <div class="form-group">
-                    <label>코드 값</label>
-                    <input v-model="newCodeDetail.code_value" type="text" required>
+                    <label for="codeId">코드 ID</label>
+                    <input 
+                        id="codeId"
+                        v-model="newCodeDetail.code_id" 
+                        type="text" 
+                        required
+                    >
                 </div>
                 <div class="form-group">
-                    <label>코드 이름</label>
-                    <input v-model="newCodeDetail.code_name" type="text" required>
+                    <label for="codeValue">코드 값</label>
+                    <input 
+                        id="codeValue"
+                        v-model="newCodeDetail.code_value" 
+                        type="text" 
+                        required
+                    >
                 </div>
                 <div class="form-group">
-                    <label>정렬 순서</label>
-                    <input v-model.number="newCodeDetail.sort_order" type="number" required>
+                    <label for="codeName">코드 이름</label>
+                    <input 
+                        id="codeName"
+                        v-model="newCodeDetail.code_name" 
+                        type="text" 
+                        required
+                    >
                 </div>
                 <div class="form-group">
-                    <label>사용 여부</label>
-                    <input v-model="newCodeDetail.is_active" type="checkbox">
+                    <label for="sortOrder">정렬 순서</label>
+                    <input 
+                        id="sortOrder"
+                        v-model.number="newCodeDetail.sort_order" 
+                        type="number" 
+                        required
+                    >
                 </div>
-                <div class="button-group">
+                <div class="form-group checkbox-group">
+                    <label for="isActive">
+                        <input 
+                            id="isActive"
+                            v-model="newCodeDetail.is_active" 
+                            type="checkbox"
+                        >
+                        사용 여부
+                    </label>
+                </div>
+                <div class="modal-buttons">
                     <button type="button" class="cancel-button" @click="closeDetailModal">취소</button>
                     <button type="submit" class="submit-button">저장</button>
                 </div>
@@ -169,6 +199,7 @@ const selectedGroupId = ref<string | null>(null)
 const showGroupModal = ref(false)
 const showDetailModal = ref(false)
 const newCodeDetail = ref({
+    code_id: '',
     code_value: '',
     code_name: '',
     sort_order: 0,
@@ -327,6 +358,7 @@ watch(currentTab, async (newTab) => {
 const closeDetailModal = () => {
     showDetailModal.value = false;
     newCodeDetail.value = {
+        code_id: '',
         code_value: '',
         code_name: '',
         sort_order: 0,
@@ -609,29 +641,92 @@ h3, h4 {
     border-radius: 8px;
     width: 90%;
     max-width: 500px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.button-group {
+.modal-content h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus {
+    border-color: #4263eb;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(66, 99, 235, 0.2);
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.modal-buttons {
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
-    margin-top: 1.5rem;
+    margin-top: 2rem;
+}
+
+.cancel-button,
+.submit-button {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .cancel-button {
-    padding: 0.5rem 1rem;
     background-color: #e9ecef;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    color: #495057;
+}
+
+.cancel-button:hover {
+    background-color: #dee2e6;
 }
 
 .submit-button {
-    padding: 0.5rem 1rem;
     background-color: #4263eb;
     color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+}
+
+.submit-button:hover {
+    background-color: #3b5bdb;
 }
 </style> 
