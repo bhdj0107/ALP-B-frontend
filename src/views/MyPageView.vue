@@ -1,157 +1,79 @@
 <script setup lang="ts">
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import { ref } from 'vue';
+
+import UserProfile from '@/components/mypage/UserProfile.vue';
+import PetManagement from '@/components/mypage/PetManagement.vue';
+import PetsitterManagement from '@/components/mypage/PetsitterManagement.vue';
+import ReservationHistory from '@/components/mypage/ReservationHistory.vue';
+import UserSettings from '@/components/mypage/UserSettings.vue';
+import AdminManagement from '@/components/mypage/AdminManagement.vue';
 
 const auth = useAuthStore();
-const isEditing = ref(false);
-const isChangingPassword = ref(false);
+const router = useRouter();
+const activeTab = ref('pets');
 
-const editForm = ref({
-    name: auth.user?.name || '',
-    email: auth.user?.email || '',
-    avatar: auth.user?.avatar || ''
+// 추가: 관리자 여부 확인
+const isAdmin = ref(auth.user?.admin === true);
+
+// 탭 목록을 계산된 속성으로 변경
+const tabs = computed(() => {
+  const baseTabs = ['pets', 'petsitter', 'reservations', 'settings'];
+  return isAdmin.value ? [...baseTabs, 'admin'] : baseTabs;
 });
 
-const passwordForm = ref({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-});
-
-const startEditing = () => {
-    isEditing.value = true;
-    editForm.value = {
-        name: auth.user?.name || '',
-        email: auth.user?.email || '',
-        avatar: auth.user?.avatar || ''
-    };
-};
-
-const cancelEditing = () => {
-    isEditing.value = false;
-};
-
-const saveChanges = () => {
-    // TODO: API 호출로 변경
-    auth.user = {
-        ...auth.user!,
-        name: editForm.value.name,
-        email: editForm.value.email,
-        avatar: editForm.value.avatar
-    };
-    isEditing.value = false;
-};
-
-const startChangingPassword = () => {
-    isChangingPassword.value = true;
-    passwordForm.value = {
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-    };
-};
-
-const cancelChangingPassword = () => {
-    isChangingPassword.value = false;
-};
-
-const savePasswordChanges = () => {
-    // TODO: API 호출로 변경
-    if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-        alert('새 비밀번호가 일치하지 않습니다.');
+// 로그인 상태 체크 및 리다이렉트
+onMounted(() => {
+    if (!auth.isAuthenticated) {
+        router.push('/login');
         return;
     }
-    console.log('Password changed:', passwordForm.value);
-    isChangingPassword.value = false;
+});
+
+const switchTab = (tab: string) => {
+    activeTab.value = tab;
 };
 </script>
 
 <template>
-    <div class="mypage">
+    <div v-if="auth.isAuthenticated" class="mypage">
         <div class="mypage-container">
-            <div class="profile-section" :class="{ 'editing': isEditing || isChangingPassword }">
-                <div class="profile-content">
-                    <img :src="auth.user?.avatar" alt="Profile Image" class="profile-image">
-                    <h1>{{ auth.user?.name }}</h1>
-                    <p>{{ auth.user?.email }}</p>
-                </div>
-                <div v-if="isEditing" class="edit-form">
-                    <div class="form-group">
-                        <label>이름</label>
-                        <input type="text" v-model="editForm.name">
-                    </div>
-                    <div class="form-group">
-                        <label>이메일</label>
-                        <input type="email" v-model="editForm.email">
-                    </div>
-                    <div class="form-group">
-                        <label>프로필 이미지 URL</label>
-                        <input type="text" v-model="editForm.avatar">
-                    </div>
-                </div>
-                <div v-if="isChangingPassword" class="edit-form">
-                    <h2>비밀번호 변경</h2>
-                    <div class="form-group">
-                        <label>현재 비밀번호</label>
-                        <input 
-                            type="password" 
-                            v-model="passwordForm.currentPassword"
-                            placeholder="현재 비밀번호를 입력하세요"
-                        >
-                    </div>
-                    <div class="form-group">
-                        <label>새 비밀번호</label>
-                        <input 
-                            type="password" 
-                            v-model="passwordForm.newPassword"
-                            placeholder="새 비밀번호를 입력하세요"
-                        >
-                    </div>
-                    <div class="form-group">
-                        <label>새 비밀번호 확인</label>
-                        <input 
-                            type="password" 
-                            v-model="passwordForm.confirmPassword"
-                            placeholder="새 비밀번호를 다시 입력하세요"
-                        >
-                    </div>
-                </div>
+            <!-- 왼쪽 사이드바 -->
+            <div class="sidebar">
+                <UserProfile />
             </div>
-            
-            <div class="content-section">
-                <div class="section-card">
-                    <h2>내 반려동물</h2>
-                    <p>등록된 반려동물이 없습니다.</p>
-                    <button class="add-button">반려동물 등록</button>
-                </div>
-                <div class="section-card">
-                    <h2>예약 내역</h2>
-                    <p>예약 내역이 없습니다.</p>
-                </div>
-                <div class="section-card">
-                    <h2>계정 설정</h2>
+
+            <!-- 오른쪽 컨텐츠 영역 -->
+            <div class="main-content">
+                <!-- 탭 네비게이션 -->
+                <div class="tab-navigation">
                     <button 
-                        v-if="!isEditing && !isChangingPassword" 
-                        class="settings-button" 
-                        @click="startEditing"
+                        v-for="tab in tabs"
+                        :key="tab"
+                        :class="['tab-button', { 
+                            active: activeTab === tab,
+                            'admin-tab': tab === 'admin' 
+                        }]"
+                        @click="switchTab(tab)"
                     >
-                        프로필 수정
+                        {{ {
+                            pets: '반려동물 관리',
+                            petsitter: '펫시터 관리',
+                            reservations: '예약 내역',
+                            settings: '회원정보 수정',
+                            admin: '관리자 페이지'
+                        }[tab] }}
                     </button>
-                    <template v-if="isEditing">
-                        <button class="save-button" @click="saveChanges">수정 완료</button>
-                        <button class="cancel-button" @click="cancelEditing">취소</button>
-                    </template>
-                    <button 
-                        v-if="!isEditing && !isChangingPassword" 
-                        class="settings-button" 
-                        @click="startChangingPassword"
-                    >
-                        비밀번호 변경
-                    </button>
-                    <template v-if="isChangingPassword">
-                        <button class="save-button" @click="savePasswordChanges">변경 완료</button>
-                        <button class="cancel-button" @click="cancelChangingPassword">취소</button>
-                    </template>
+                </div>
+
+                <!-- 탭 컨텐츠 -->
+                <div class="tab-content">
+                    <PetManagement v-if="activeTab === 'pets'" />
+                    <PetsitterManagement v-if="activeTab === 'petsitter'" />
+                    <ReservationHistory v-if="activeTab === 'reservations'" />
+                    <UserSettings v-if="activeTab === 'settings'" />
+                    <AdminManagement v-if="activeTab === 'admin'" />
                 </div>
             </div>
         </div>
@@ -168,157 +90,100 @@ const savePasswordChanges = () => {
 .mypage-container {
     max-width: 1200px;
     margin: 0 auto;
-}
-
-.profile-section {
     display: flex;
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.profile-section.editing {
     gap: 2rem;
 }
 
-.profile-content {
-    flex: 1;
-    text-align: center;
+/* admin 탭일 때의 스타일 */
+.mypage-container:has(.admin-management) {
+    max-width: 1600px;
 }
 
-.edit-form {
-    flex: 1;
-    padding-left: 2rem;
-    border-left: 1px solid #eee;
-}
-
-.form-group {
-    margin-bottom: 1rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #666;
-    font-size: 0.9rem;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-.save-button {
-    background: linear-gradient(to right, #2c3338, #4a4f54);
-    color: white;
-    margin-bottom: 0.5rem;
-}
-
-.cancel-button {
-    background: transparent;
-    border: 1px solid #dc3545;
-    color: #dc3545;
-    margin-bottom: 0.5rem;
-}
-
-.cancel-button:hover {
-    background: #dc3545;
-    color: white;
-}
-
-.profile-image {
-    width: 120px;
-    height: 120px;
-    border-radius: 60px;
-    margin-bottom: 1rem;
-    object-fit: cover;
-    border: 3px solid #f5f5f5;
-}
-
-.content-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
-
-.section-card {
+.sidebar {
+    width: 300px;
+    flex-shrink: 0;
     background: white;
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: fit-content;
 }
 
-h1 {
-    color: #333;
-    margin-bottom: 0.5rem;
+.main-content {
+    flex: 1;
+    min-width: 0; /* 중요: flexbox 내에서 오버플로우 방지 */
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
-h2 {
-    color: #333;
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-}
-
-p {
-    color: #666;
-    margin-bottom: 1rem;
-}
-
-button {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: linear-gradient(to right, #2c3338, #4a4f54);
-    color: white;
-    width: 100%;
-    margin-bottom: 0.5rem;
-}
-
-button:hover {
-    opacity: 0.9;
-}
-
-.settings-button {
-    background: transparent;
-    border: 1px solid #2c3338;
-    color: #2c3338;
-}
-
-.settings-button:hover {
-    background: #2c3338;
-    color: white;
-}
-
-.edit-form h2 {
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
+.tab-navigation {
+    display: flex;
     border-bottom: 1px solid #eee;
+    background: #f8f9fa;
 }
 
-.form-group input[type="password"] {
-    letter-spacing: 0.1em;
+.tab-button {
+    padding: 1rem 2rem;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 0;
+    width: auto;
+}
+
+.tab-button.active {
+    color: #2c3338;
+    border-bottom: 2px solid #2c3338;
+    background: white;
+}
+
+.tab-button:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.tab-button.admin-tab.active {
+    border-bottom-color: #dc3545;
+    color: #dc3545;
+}
+
+.tab-content {
+    width: 100%;
+    padding: 2rem;
+}
+
+@media (max-width: 1800px) {
+    .mypage-container:has(.admin-management) {
+        margin: 0 2rem;
+    }
 }
 
 @media (max-width: 768px) {
-    .profile-section {
+    .mypage-container,
+    .mypage-container:has(.admin-management) {
+        flex-direction: column;
+        margin: 0;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .main-content {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .tab-navigation {
         flex-direction: column;
     }
 
-    .edit-form {
-        padding-left: 0;
-        border-left: none;
-        border-top: 1px solid #eee;
-        padding-top: 1rem;
-        margin-top: 1rem;
+    .tab-button {
+        width: 100%;
+        text-align: left;
     }
 }
 </style> 

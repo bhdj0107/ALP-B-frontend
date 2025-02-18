@@ -5,8 +5,19 @@ import { useAuthStore } from '@/stores/auth';
 const router = useRouter();
 const auth = useAuthStore();
 
-const handleLogout = () => {
-    auth.logout();
+const handleLogout = async () => {
+    try {
+        await auth.logout();
+        alert('로그아웃 되었습니다.');
+        router.push('/');
+    } catch (error) {
+        if (error instanceof Error) {
+            alert(error.message);
+        } else {
+            alert('로그아웃에 실패했습니다.');
+        }
+        console.error('Logout error:', error);
+    }
 };
 
 const goToLogin = () => {
@@ -58,7 +69,7 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(30, 0, 0, 0.1);
     padding: 0.5rem 1rem;
     border-radius: 2rem;
     max-width: 100%;
@@ -66,6 +77,7 @@ export default {
     margin: 0;
     transition: all 0.3s ease;
     gap: 1rem;
+    padding-right: 1rem;
 }
 
 .user-profile:hover {
@@ -112,12 +124,17 @@ export default {
 }
 
 .login-btn, .signup-btn, .logout-btn {
-    padding: 0.5rem 1rem;
+    padding: 0.8rem 1rem;
+    height: 100%;
     border: none;
     border-radius: 4px;
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: flex; /* 추가 */
+    align-items: center; /* 추가 */
+    justify-content: center; /* 추가 */
+
 }
 
 .login-btn {

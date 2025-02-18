@@ -35,3 +35,15 @@ a,
     padding: 0;
   }
 }
+
+.header {
+  background-color: #ffccdc;
+}
+
+.footer {
+  background-color: #ffb3c1;
+}
+
+.card {
+  border: 1px solid #ff99b3;
+}

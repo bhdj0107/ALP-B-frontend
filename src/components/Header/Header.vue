@@ -14,7 +14,7 @@
 </script>
 
 <template>
-    <header>
+    <header class="header">
         <div class="logo-section">
             <router-link to="/" custom v-slot="{ navigate }">
                 <div class="logo-link" @click="navigate">
@@ -33,7 +33,7 @@ export default {
 </script>
 
 <style scoped>
-header {
+.header {
     position: fixed;
     top: 0;
     left: 0;
@@ -42,9 +42,9 @@ header {
     display: flex;
     flex-shrink: 0;
     width: 100%;
-    background: linear-gradient(to right, #2c3338, #4a4f54);
+    background-color: #fab6cc; /* 헤더 배경색 */
     height: 4rem;
-    color: white;
+    color: #4a1c2e; /* 변경: 헤더 텍스트 색상 */
     padding: 0 2rem;
     justify-content: space-between;
     align-items: center;
@@ -52,6 +52,7 @@ header {
 }
 
 .logo-section h1 {
+    color: var(--color-text-white) !important;
     font-size: 1.5rem;
     font-weight: 600;
     margin: 0;
@@ -69,4 +70,5 @@ header {
     opacity: 0.9;
     background: none;
 }
+
 </style>

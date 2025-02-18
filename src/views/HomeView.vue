@@ -1,5 +1,8 @@
 <script setup lang="ts">
     import Card from '../components/Card/Card.vue';
+    import serviceImage from '@/assets/service.jpg?url';
+    import shopImage from '@/assets/shop.jpg?url';
+    import manageImage from '@/assets/manage.webp?url';
 </script>
 
 <template>
@@ -11,21 +14,21 @@
             <div class="card-wrapper">
                 <router-link to="/shopping" custom v-slot="{ navigate }">
                     <div class="card-link" @click="navigate">
-                        <Card :data="{ imageSrc: 'https://placehold.co/150', text: '반려용품 쇼핑' }" />
+                        <Card :data="{ imageSrc: shopImage, text: '쇼핑' }" />
                     </div>
                 </router-link>
             </div>
             <div class="card-wrapper">
                 <router-link to="/petsitter" custom v-slot="{ navigate }">
                     <div class="card-link" @click="navigate">
-                        <Card :data="{ imageSrc: 'https://placehold.co/150', text: '반려동물 펫시터' }" />
+                        <Card :data="{ imageSrc: serviceImage, text: '펫시터 서비스' }" />
                     </div>
                 </router-link>
             </div>
             <div class="card-wrapper">
                 <router-link to="/management" custom v-slot="{ navigate }">
                     <div class="card-link" @click="navigate">
-                        <Card :data="{ imageSrc: 'https://placehold.co/150', text: '반려동물 관리' }" />
+                        <Card :data="{ imageSrc: manageImage, text: '반려동물 관리' }" />
                     </div>
                 </router-link>
             </div>
@@ -41,7 +44,7 @@
 
 .banner {
     width: 100%;
-    height: 300px;
+    height: 500px;
     background-image: url('@/assets/banner.jpg');
     background-size: cover;
     background-position: center;

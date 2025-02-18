@@ -1,5 +1,12 @@
 <script setup lang="ts">
     import Header from './components/Header/Header.vue';
+    import { useAuthStore } from '@/stores/auth';
+    import { onMounted } from 'vue';
+    const auth = useAuthStore();
+
+    onMounted(async () => {
+        await auth.checkSession();
+    });
 </script>
 
 <template>

@@ -24,7 +24,7 @@ const handleSignup = async () => {
         // API 요청 데이터에서 confirmPassword 제외
         const { confirmPassword, ...signupData } = formData.value;
         
-        const response = await axios.post('http://172.30.1.36:8080/api/v1/user/signup', signupData);
+        const response = await axios.post('http://localhost:8080/api/v1/user/signup', signupData);
         if (response.status === 200) {
             alert('회원가입이 완료되었습니다.');
             router.push('/login');
@@ -135,6 +135,7 @@ h2 {
 
 label {
     font-weight: bold;
+    color: #666;
 }
 
 input {

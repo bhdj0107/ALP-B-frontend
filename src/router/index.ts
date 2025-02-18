@@ -45,7 +45,7 @@ const router = createRouter({
       name: 'mypage',
       component: MyPageView,
       meta: { requiresAuth: true }
-    }
+    },
   ]
 })
 

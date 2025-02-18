@@ -5,18 +5,16 @@ import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
 const auth = useAuthStore();
-const formData = ref({
-    email: '',
-    password: ''
-});
+const email = ref('');
+const password = ref('');
 
 const handleSubmit = async () => {
     try {
-        await auth.login(formData.value.email, formData.value.password);
-        router.push('/');
+        await auth.login(email.value, password.value);
+        router.push('/mypage');
     } catch (error) {
-        console.error('Login failed:', error);
-        // TODO: 에러 처리
+        alert('아이디 또는 비밀번호가 잘못되었습니다.');
+        console.error('Login error:', error);
     }
 };
 
@@ -35,7 +33,7 @@ const goToSignup = () => {
                     <input 
                         type="email" 
                         id="email"
-                        v-model="formData.email"
+                        v-model="email"
                         required
                     >
                 </div>
@@ -44,7 +42,7 @@ const goToSignup = () => {
                     <input 
                         type="password" 
                         id="password"
-                        v-model="formData.password"
+                        v-model="password"
                         required
                     >
                 </div>
@@ -90,6 +88,7 @@ label {
     display: block;
     margin-bottom: 0.5rem;
     color: #666;
+    font-weight: bold;
 }
 
 input {
