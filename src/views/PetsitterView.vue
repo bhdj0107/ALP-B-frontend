@@ -109,7 +109,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>원하는 서비스 선택</label>
+                        <label>원하는 서비스 선택 (1개 이상)</label>
                         <div class="service-selection">
                             <div v-for="service in selectedPetsitter?.services" 
                                  :key="service" 
@@ -119,7 +119,6 @@
                                         type="checkbox" 
                                         :value="service"
                                         v-model="reservationForm.selectedServices"
-                                        required
                                     >
                                     <span>{{ service }}</span>
                                 </label>
@@ -156,7 +155,11 @@
                         <button type="button" @click="closeModal" class="cancel-button">
                             취소
                         </button>
-                        <button type="submit" class="submit-button">
+                        <button 
+                            type="submit" 
+                            class="submit-button"
+                            :disabled="!isFormValid || !reservationForm.selectedServices.length"
+                        >
                             예약 신청
                         </button>
                     </div>
@@ -355,6 +358,12 @@ const confirmEndTime = () => {
         toast.success('종료 시간이 설정되었습니다.')
     }
 }
+
+const isFormValid = computed(() => {
+    return reservationForm.value.startTime && 
+           reservationForm.value.endTime && 
+           reservationForm.value.selectedServices.length > 0;  // 서비스 선택 검증 추가
+});
 
 onMounted(() => {
     fetchPetsitters(0)
